@@ -57,7 +57,9 @@ int main() {
     vector<vector<double>> data;
     string fileName = dataset_path_win ;
     if ( !loadDataset(fileName, names, data) ) return 1;
-    int dataProperties[data.size()][3];
+    double dataProperties[data.size()][3];
+    unsigned int dataIndex(0);
+
     //this is loop that prints all variables (features), one by one
 /*
     for(vector<vector<double> >::const_iterator vvi_iterator = data.begin();vvi_iterator!=data.end();++vvi_iterator) {
@@ -71,13 +73,25 @@ int main() {
 */
     for(vector<vector<double>>::const_iterator vvi_iterator = data.begin();vvi_iterator!=data.end();++vvi_iterator)
     {
-        dataProperties[()vvi_iterator][]
+        dataProperties[dataIndex][0] = Mean(data.at(dataIndex));
+        dataProperties[dataIndex][1] = Variance(data.at(dataIndex));
+        dataProperties[dataIndex][2] = Strdev(data.at(dataIndex));
+        dataIndex++;
     }
     cout<<"Number of features:"<< data.size() <<endl;
-    cout<<"First Feature Mean: "<< Mean(data.front()) <<endl;
+/*    cout<<"First Feature Mean: "<< Mean(data.front()) <<endl;
     cout<<"First Feature Median: "<< Median(data.front()) <<endl;
     cout<<"First Feature Standard deviation: "<< Strdev(data.front()) <<endl;
-    cout<<"Correlation between feature 1 and 2: "<< Correl(data.front(), data.at(1)) <<endl;
+    cout<<"Correlation between feature 1 and 2: "<< Correl(data.front(), data.at(1)) <<endl;*/
+
+    for(int i=0;i<data.size();i++)
+    {
+        cout<<"Feature #"<<i+1<<":"<<endl;
+        cout<<"Mean :              "<<dataProperties[i][0]<<endl;
+        cout<<"Variance :          "<<dataProperties[i][1]<<endl;
+        cout<<"Standard deviation: "<<dataProperties[i][2]<<endl;
+        cout<<endl;
+    }
 
     return 0;
 }
