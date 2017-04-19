@@ -58,7 +58,8 @@ int main() {
     string fileName = dataset_path_win ;
     if ( !loadDataset(fileName, names, data) ) return 1;
     double dataProperties[data.size()][3];
-    unsigned int dataIndex(0);
+    double bestCorrel(0.0), weakCorrel(1.0);
+    unsigned int dataIndex(0), xBestCorrelIndex(0), yBestCorrelIndex(0), xWeakCorrelIndex(0), yWeakCorrelIndex(0);
 
     //this is loop that prints all variables (features), one by one
 /*
@@ -92,6 +93,28 @@ int main() {
         cout<<"Standard deviation: "<<dataProperties[i][2]<<endl;
         cout<<endl;
     }
+    for(unsigned i=0;i<data.size();i++)
+    {
+        for(unsigned j=i+1;j<data.size();j++)
+        {
+            if(dabs(Correl(data.at(i),data.at(j)))>bestCorrel)
+            {
+                bestCorrel = dabs(Correl(data.at(i), data.at(j)));
+                xBestCorrelIndex = i;
+                yBestCorrelIndex = j;
+            }
+            else if(dabs(Correl(data.at(i),data.at(j)))<weakCorrel)
+            {
+                weakCorrel = dabs(Correl(data.at(i),data.at(j)));
+                xWeakCorrelIndex = i;
+                yWeakCorrelIndex = j;
+            }
+
+        }
+    }
+
+    cout<<"Strongest correlation is between features #"<<xBestCorrelIndex+1<<" and #"<<yBestCorrelIndex+1<<": "<<bestCorrel<<endl;
+    cout<<"Weakest correlation is between features #"<<xWeakCorrelIndex+1<<" and #"<<yWeakCorrelIndex+1<<": "<<weakCorrel<<endl;
 
     return 0;
 }
