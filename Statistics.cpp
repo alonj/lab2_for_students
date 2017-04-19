@@ -68,7 +68,7 @@ double Correl(const vector<double>& xv , const vector<double>& yv)
     return covXY/(stdX*stdY);
 }
 
-double dabs(double a)
+double doubleAbs(double a)
 {
     if(a<0)
         return a*(-1);

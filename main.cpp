@@ -4,9 +4,10 @@
 #include <vector>
 #include <string>
 #include "Statistics.h"
+#include "math.h"
 
 #define dataset_path_nix "/mnt/share/students/LAB2/winequality.csv"
-#define dataset_path_win "C:\\Users\\alonj\\Desktop\\Lab 2\\winequality.csv"
+#define dataset_path "C:\\Users\\alonj\\Desktop\\Lab 2\\winequality.csv"
 
 using std::string;
 using std::vector;
@@ -50,16 +51,27 @@ bool loadDataset(const string& fileName, vector<string>& dataNames, vector<vecto
 
 }
 
+bool correlTestSymmetry(const vector<vector<double>>& data)
+{
+    bool localtest(1);
+    for(int i=0;i<data.size();i++)
+    {
+        for(int j=i+1;j<data.size();j++)
+            if (trunc(1000. * doubleAbs(Correl(data.at(i),data.at(j)))) != trunc(1000. * doubleAbs(Correl(data.at(j),data.at(i)))))
+                localtest=0;
+    }
+    return localtest;
+}
 
 int main() {
 
     vector<string> names;
     vector<vector<double>> data;
-    string fileName = dataset_path_win ;
+    string fileName = dataset_path ;
     if ( !loadDataset(fileName, names, data) ) return 1;
     double dataProperties[data.size()][3];
     double bestCorrel(0.0), weakCorrel(1.0);
-    unsigned int dataIndex(0), xBestCorrelIndex(0), yBestCorrelIndex(0), xWeakCorrelIndex(0), yWeakCorrelIndex(0);
+    unsigned int dataIndex(0), xBestCorrelIndex(0), yBestCorrelIndex(0), xWeakCorrelIndex(0), yWeakCorrelIndex(0), testCorrel(0);
 
     //this is loop that prints all variables (features), one by one
 /*
@@ -85,9 +97,9 @@ int main() {
     cout<<"First Feature Standard deviation: "<< Strdev(data.front()) <<endl;
     cout<<"Correlation between feature 1 and 2: "<< Correl(data.front(), data.at(1)) <<endl;*/
 
-    for(int i=0;i<data.size();i++)
+    for(unsigned int i=0;i<data.size();i++)
     {
-        cout<<"Feature #"<<i+1<<":"<<endl;
+        cout<<"Feature #"<<i+1<<" ("<<names.at(i)<<"):"<<endl;
         cout<<"Mean :              "<<dataProperties[i][0]<<endl;
         cout<<"Variance :          "<<dataProperties[i][1]<<endl;
         cout<<"Standard deviation: "<<dataProperties[i][2]<<endl;
@@ -97,24 +109,27 @@ int main() {
     {
         for(unsigned j=i+1;j<data.size();j++)
         {
-            if(dabs(Correl(data.at(i),data.at(j)))>bestCorrel)
+            if(doubleAbs(Correl(data.at(i),data.at(j)))>bestCorrel)
             {
-                bestCorrel = dabs(Correl(data.at(i), data.at(j)));
+                bestCorrel = doubleAbs(Correl(data.at(i), data.at(j)));
                 xBestCorrelIndex = i;
                 yBestCorrelIndex = j;
             }
-            else if(dabs(Correl(data.at(i),data.at(j)))<weakCorrel)
+            else if(doubleAbs(Correl(data.at(i),data.at(j)))<weakCorrel)
             {
-                weakCorrel = dabs(Correl(data.at(i),data.at(j)));
+                weakCorrel = doubleAbs(Correl(data.at(i),data.at(j)));
                 xWeakCorrelIndex = i;
                 yWeakCorrelIndex = j;
             }
 
         }
     }
-
-    cout<<"Strongest correlation is between features #"<<xBestCorrelIndex+1<<" and #"<<yBestCorrelIndex+1<<": "<<bestCorrel<<endl;
-    cout<<"Weakest correlation is between features #"<<xWeakCorrelIndex+1<<" and #"<<yWeakCorrelIndex+1<<": "<<weakCorrel<<endl;
-
+    cout<<"Strongest correlation is between "<<names.at(xBestCorrelIndex)<<" and "<<names.at(yBestCorrelIndex)<<": "<<bestCorrel<<endl;
+    cout<<"Weakest correlation is between "<<names.at(xWeakCorrelIndex)<<" and "<<names.at(yWeakCorrelIndex)<<": "<<weakCorrel<<endl;
+    cout<<"CORRELATION SYMMETRY TEST: ";
+    if(correlTestSymmetry(data))
+        cout<<"OK";
+    else
+        cout<<"FALSE (data size: "<<data.size()<<", test value: "<<testCorrel<<")"<<endl;
     return 0;
 }
